@@ -387,8 +387,8 @@ export async function uploadDependencySnapshot(): Promise<void> {
   const snapshot_sha = core.getInput("dependency-snapshot-sha") || sha;
 
   // debug print dependency-snapshot-sha
-  debugLog(`dependency-snapshot-sha (param): ${core.getInput("dependency-snapshot-sha")}`)
-  debugLog(`dependency-snapshot-sha (final): ${snapshot_sha}`);
+  debugLog("dependency-snapshot-sha (param):", core.getInput("dependency-snapshot-sha"));
+  debugLog("dependency-snapshot-sha (final):", snapshot_sha);
 
   const snapshot = JSON.parse(
     fs.readFileSync(githubDependencySnapshotFile).toString("utf8")
