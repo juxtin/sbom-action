@@ -3,7 +3,6 @@ import * as github from "@actions/github";
 import * as cache from "@actions/tool-cache";
 import {
   PullRequestEvent,
-  PullRequestSchema,
   Release,
   ReleaseEvent,
 } from "@octokit/webhooks-types";
@@ -385,15 +384,18 @@ export async function uploadDependencySnapshot(): Promise<void> {
   }
   const { workflow, job, runId, repo, sha, ref } = github.context;
   const client = getClient(repo, core.getInput("github-token"));
-  var snapshot_sha = core.getInput("dependency-snapshot-sha") || sha;
+  let snapshot_sha = core.getInput("dependency-snapshot-sha") || sha;
   if (github.context.eventName === "pull_request") {
     // If this is a pull request, we need to use the correct head sha
-    const pr = PullRequestSchema.parse(github.context.payload.pull_request);
+    const pr = (github.context.payload as PullRequestEvent).pull_request;
     snapshot_sha = pr.head.sha;
   }
 
   // debug print dependency-snapshot-sha
-  debugLog("dependency-snapshot-sha (param):", core.getInput("dependency-snapshot-sha"));
+  debugLog(
+    "dependency-snapshot-sha (param):",
+    core.getInput("dependency-snapshot-sha")
+  );
   debugLog("dependency-snapshot-sha (final):", snapshot_sha);
 
   const snapshot = JSON.parse(

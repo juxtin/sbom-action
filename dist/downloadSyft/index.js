@@ -24318,15 +24318,24 @@ function uploadDependencySnapshot() {
         }
         const { workflow, job, runId, repo, sha, ref } = github.context;
         const client = (0, GithubClient_1.getClient)(repo, core.getInput("github-token"));
+        let snapshot_sha = core.getInput("dependency-snapshot-sha") || sha;
+        if (github.context.eventName === "pull_request") {
+            // If this is a pull request, we need to use the correct head sha
+            const pr = github.context.payload.pull_request;
+            snapshot_sha = pr.head.sha;
+        }
+        // debug print dependency-snapshot-sha
+        (0, GithubClient_1.debugLog)("dependency-snapshot-sha (param):", core.getInput("dependency-snapshot-sha"));
+        (0, GithubClient_1.debugLog)("dependency-snapshot-sha (final):", snapshot_sha);
         const snapshot = JSON.parse(fs.readFileSync(githubDependencySnapshotFile).toString("utf8"));
         // Need to add the job and repo details
         snapshot.job = {
             correlator: core.getInput("dependency-snapshot-correlator") || `${workflow}_${job}`,
             id: `${runId}`,
         };
-        snapshot.sha = sha;
+        snapshot.sha = snapshot_sha;
         snapshot.ref = ref;
-        core.info(`Uploading GitHub dependency snapshot from ${githubDependencySnapshotFile}`);
+        core.info(`Uploading GitHub dependency snapshot from ${githubDependencySnapshotFile} for sha ${snapshot_sha}`);
         (0, GithubClient_1.debugLog)("Snapshot:", snapshot);
         yield client.postDependencySnapshot(snapshot);
     });
