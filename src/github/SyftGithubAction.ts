@@ -386,6 +386,10 @@ export async function uploadDependencySnapshot(): Promise<void> {
   const client = getClient(repo, core.getInput("github-token"));
   const snapshot_sha = core.getInput("dependency-snapshot-sha") || sha;
 
+  // debug print dependency-snapshot-sha
+  core.info(`dependency-snapshot-sha (param): ${core.getInput("dependency-snapshot-sha")}`)
+  core.info(`dependency-snapshot-sha (final): ${snapshot_sha}`);
+
   const snapshot = JSON.parse(
     fs.readFileSync(githubDependencySnapshotFile).toString("utf8")
   ) as DependencySnapshot;
