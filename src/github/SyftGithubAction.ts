@@ -384,6 +384,7 @@ export async function uploadDependencySnapshot(): Promise<void> {
   }
   const { workflow, job, runId, repo, sha, ref } = github.context;
   const client = getClient(repo, core.getInput("github-token"));
+  const snapshot_sha = core.getInput("dependency-snapshot-sha") || sha;
 
   const snapshot = JSON.parse(
     fs.readFileSync(githubDependencySnapshotFile).toString("utf8")
@@ -395,7 +396,7 @@ export async function uploadDependencySnapshot(): Promise<void> {
       core.getInput("dependency-snapshot-correlator") || `${workflow}_${job}`,
     id: `${runId}`,
   };
-  snapshot.sha = sha;
+  snapshot.sha = snapshot_sha;
   snapshot.ref = ref;
 
   core.info(

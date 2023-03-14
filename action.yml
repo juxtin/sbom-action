@@ -53,6 +53,11 @@ inputs:
     description: "Upload to GitHub dependency snapshot API"
     default: "false"
 
+  dependency-snapshot-sha:
+    required: false
+    description: "The SHA of the commit to associate with the dependency snapshot. Defaults to the SHA at checkout."
+    default: ${{ github.sha }}
+
   upload-artifact:
     required: false
     description: "Upload artifact to workflow"
